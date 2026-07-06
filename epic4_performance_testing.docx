@@ -1,0 +1,60 @@
+Performance Testing and Optimization
+Description
+
+The Performance Testing and Optimization phase focuses on evaluating the system’s efficiency, speed, and stability under different workloads. The goal is to ensure that the Voice-Based Communication Evaluation System performs smoothly during transcription, embedding generation, and audio feature extraction, even for longer audio inputs and repeated evaluations.
+
+1. Runtime Performance Measurement
+
+The system performance was measured for the following components:
+
+a) Speech-to-Text Transcription
+Time taken to convert audio into text was recorded.
+Performance tested on short, medium, and long audio files.
+b) Embedding Computation
+Sentence embeddings were generated using transformer models.
+Computation time was measured for semantic similarity tasks.
+c) Audio Feature Extraction
+Features such as duration, speaking rate, and pauses were extracted.
+Execution time was tracked for each process.
+Result
+The system showed efficient processing for short and medium audio inputs.
+Slight increase in runtime observed for longer audio files, but within acceptable limits.
+2. Optimization Techniques
+
+To improve performance and reduce latency, the following optimizations were implemented:
+
+a) Streamlit Caching
+Used @st.cache_resource for model loading.
+Prevented repeated loading of heavy models like Whisper and Sentence Transformers.
+import streamlit as st
+from sentence_transformers import SentenceTransformer
+
+@st.cache_resource
+def load_model():
+    model = SentenceTransformer('all-MiniLM-L6-v2')
+    return model
+b) Efficient Model Loading
+Models are loaded only once at startup.
+Avoided re-initialization during each evaluation.
+c) Reduced Redundant Computations
+Stored intermediate results such as embeddings.
+Prevented repeated processing of the same audio input.
+3. Stability Testing
+
+The system was tested under repeated and heavy usage scenarios.
+
+Test Cases
+Scenario	Result
+Multiple evaluations (10+ runs)	Stable performance
+Long audio input (5–10 minutes)	No crashes
+Rapid repeated uploads	No memory leaks
+Continuous transcription requests	Consistent output
+4. Performance Summary
+Component	Performance
+Transcription	Fast for short audio, moderate for long audio
+Embedding Generation	Optimized using caching
+Feature Extraction	Efficient and stable
+Overall System	Stable under repeated use
+5. Conclusion
+
+The performance testing confirmed that the system is efficient, stable, and optimized for real-world usage. By implementing Streamlit caching and optimizing model loading, the system significantly reduced latency and improved responsiveness. The application remains stable even under repeated evaluations and longer audio inputs.
