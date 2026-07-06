@@ -1,0 +1,78 @@
+import whisper
+import librosa
+import soundfile as sf
+import os
+
+
+class SpeechToText:
+
+    def __init__(self, model_name="base"):
+        """
+        Load Whisper Model
+        Options:
+        tiny, base, small, medium, large
+        """
+        print("Loading Whisper Model...")
+        self.model = whisper.load_model(model_name)
+        print("Model Loaded Successfully!")
+
+    def normalize_audio(self, input_audio, output_audio):
+        """
+        Normalize audio to 16kHz mono WAV
+        """
+
+        print("Normalizing Audio...")
+
+        audio, sr = librosa.load(input_audio, sr=16000, mono=True)
+
+        # Normalize volume
+        audio = librosa.util.normalize(audio)
+
+        sf.write(output_audio, audio, 16000)
+
+        print("Normalized Audio Saved:", output_audio)
+
+    def transcribe_audio(self, audio_file):
+        """
+        Convert Speech to Text
+        """
+
+        print("Transcribing...")
+
+        result = self.model.transcribe(audio_file)
+
+        text = result["text"]
+
+        return text
+
+    def save_transcription(self, text, filename="transcription.txt"):
+        """
+        Save transcript
+        """
+
+        with open(filename, "w", encoding="utf-8") as file:
+            file.write(text)
+
+        print("Transcription Saved:", filename)
+
+
+def main():
+
+    input_audio = "sample.wav"
+
+    normalized_audio = "normalized.wav"
+
+    stt = SpeechToText(model_name="base")
+
+    stt.normalize_audio(input_audio, normalized_audio)
+
+    transcript = stt.transcribe_audio(normalized_audio)
+
+    print("\n========== TRANSCRIPTION ==========\n")
+    print(transcript)
+
+    stt.save_transcription(transcript)
+
+
+if __name__ == "__main__":
+    main()

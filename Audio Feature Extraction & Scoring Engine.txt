@@ -1,0 +1,53 @@
+import librosa
+import numpy as np
+
+class AudioFeatureExtractor:
+
+    def __init__(self, audio_path):
+        self.audio_path = audio_path
+        self.audio, self.sr = librosa.load(audio_path, sr=16000)
+
+    def rms_energy(self):
+        rms = librosa.feature.rms(y=self.audio)[0]
+        return float(np.mean(rms))
+
+    def pause_ratio(self, threshold=0.02):
+
+        frame_length = 2048
+        hop_length = 512
+
+        rms = librosa.feature.rms(
+            y=self.audio,
+            frame_length=frame_length,
+            hop_length=hop_length
+        )[0]
+
+        silent_frames = np.sum(rms < threshold)
+
+        total_frames = len(rms)
+
+        ratio = silent_frames / total_frames
+
+        return round(ratio, 3)
+
+    def duration(self):
+
+        return librosa.get_duration(
+            y=self.audio,
+            sr=self.sr
+        )
+
+    def extract_features(self):
+
+        return {
+            "Duration": round(self.duration(),2),
+            "RMS Energy": round(self.rms_energy(),4),
+            "Pause Ratio": self.pause_ratio()
+        }
+
+
+if __name__ == "__main__":
+
+    extractor = AudioFeatureExtractor("sample.wav")
+
+    print(extractor.extract_features())

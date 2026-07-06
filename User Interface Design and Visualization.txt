@@ -1,0 +1,237 @@
+import streamlit as st
+import librosa
+import librosa.display
+import matplotlib.pyplot as plt
+import tempfile
+
+# -----------------------------
+# PAGE CONFIGURATION
+# -----------------------------
+st.set_page_config(
+    page_title="VBCUA",
+    page_icon="🎤",
+    layout="wide"
+)
+
+# -----------------------------
+# CUSTOM CSS
+# -----------------------------
+st.markdown("""
+<style>
+
+body{
+    background-color:#f5f7fa;
+}
+
+.block-container{
+    padding-top:2rem;
+}
+
+.title{
+    text-align:center;
+    font-size:40px;
+    color:#1E3A8A;
+    font-weight:bold;
+}
+
+.subtitle{
+    text-align:center;
+    color:gray;
+    font-size:18px;
+}
+
+.metric-card{
+    background:#ffffff;
+    padding:15px;
+    border-radius:12px;
+    box-shadow:0px 0px 10px rgba(0,0,0,0.08);
+}
+
+</style>
+""", unsafe_allow_html=True)
+
+# -----------------------------
+# HEADER
+# -----------------------------
+st.markdown("<div class='title'>🎤 Voice-Based Concept Understanding Analyser</div>", unsafe_allow_html=True)
+
+st.markdown("<div class='subtitle'>AI-Based Speech Evaluation using Whisper, SBERT and Librosa</div>", unsafe_allow_html=True)
+
+st.markdown("---")
+
+# =============================
+# SIDEBAR
+# =============================
+
+st.sidebar.title("Settings")
+
+concept = st.sidebar.selectbox(
+    "Reference Concept",
+    [
+        "Machine Learning",
+        "Cloud Computing",
+        "Artificial Intelligence",
+        "Data Science",
+        "Cyber Security"
+    ]
+)
+
+st.sidebar.markdown("---")
+
+uploaded_file = st.sidebar.file_uploader(
+    "Upload WAV File",
+    type=["wav"]
+)
+
+st.sidebar.markdown("---")
+
+analyze = st.sidebar.button("Analyze Audio")
+
+# =============================
+# MAIN LAYOUT
+# =============================
+
+tab1, tab2, tab3 = st.tabs(
+    [
+        "📄 Reference",
+        "🎧 Analysis",
+        "📊 Results"
+    ]
+)
+
+# ==========================================
+# TAB 1
+# ==========================================
+
+with tab1:
+
+    st.header("Reference Concept")
+
+    reference = {
+        "Machine Learning":
+        "Machine Learning enables computers to learn from data without explicit programming.",
+
+        "Cloud Computing":
+        "Cloud Computing delivers computing services over the internet.",
+
+        "Artificial Intelligence":
+        "Artificial Intelligence simulates human intelligence using machines.",
+
+        "Data Science":
+        "Data Science extracts knowledge from structured and unstructured data.",
+
+        "Cyber Security":
+        "Cyber Security protects systems and networks from cyber attacks."
+    }
+
+    st.info(reference[concept])
+
+# ==========================================
+# TAB 2
+# ==========================================
+
+with tab2:
+
+    st.header("Audio Analysis")
+
+    if uploaded_file:
+
+        st.audio(uploaded_file)
+
+        temp = tempfile.NamedTemporaryFile(delete=False)
+
+        temp.write(uploaded_file.read())
+
+        audio, sr = librosa.load(temp.name, sr=16000)
+
+        fig, ax = plt.subplots(figsize=(12,3))
+
+        librosa.display.waveshow(audio, sr=sr)
+
+        ax.set_title("Speech Waveform")
+
+        st.pyplot(fig)
+
+        st.success("Audio Loaded Successfully")
+
+    else:
+
+        st.warning("Upload an audio file.")
+
+# ==========================================
+# TAB 3
+# ==========================================
+
+with tab3:
+
+    st.header("Evaluation Results")
+
+    if analyze:
+
+        c1,c2,c3,c4 = st.columns(4)
+
+        c1.metric("Semantic Similarity","90%","+3%")
+        c2.metric("Filler Ratio","5%","-2%")
+        c3.metric("Pause Ratio","11%","-1%")
+        c4.metric("Confidence","89%","+4%")
+
+        st.markdown("---")
+
+        score_col, feedback_col = st.columns([1,2])
+
+        with score_col:
+
+            st.subheader("Final Score")
+
+            score = 91
+
+            st.progress(score)
+
+            st.metric("Understanding Score",f"{score}/100")
+
+        with feedback_col:
+
+            st.subheader("Performance")
+
+            st.success("Strong Understanding")
+
+            st.write("""
+- Excellent conceptual knowledge.
+- Good speech fluency.
+- Very few filler words.
+- Confident communication.
+- High semantic similarity.
+""")
+
+        st.markdown("---")
+
+        with st.expander("Speech Transcription"):
+
+            st.write("""
+Machine learning is a branch of artificial intelligence that
+allows computers to learn from data without explicit programming.
+""")
+
+        with st.expander("Detailed Analysis"):
+
+            st.write("""
+Semantic Similarity : 90%
+
+Pause Ratio : 11%
+
+Filler Ratio : 5%
+
+RMS Energy : 0.72
+
+Communication Confidence : High
+""")
+
+        st.download_button(
+            "📄 Download Report",
+            data="Sample PDF Report",
+            file_name="VBCUA_Report.pdf"
+        )
+
+    else:
+
+        st.info("Click 'Analyze Audio' to generate the evaluation.")

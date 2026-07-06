@@ -1,0 +1,32 @@
+import subprocess
+import os
+import signal
+
+print("Terminating Streamlit and localtunnel processes...")
+
+def terminate_process(process_name):
+    try:
+        # Use pgrep to find PIDs of the process_name
+        pids_output = subprocess.check_output(["pgrep", process_name]).decode().strip()
+        pids = [int(p) for p in pids_output.split()]
+        
+        if pids:
+            for pid in pids:
+                try:
+                    os.kill(pid, signal.SIGTERM)  # Send termination signal
+                    print(f"Terminated {process_name} process with PID: {pid}")
+                except ProcessLookupError:
+                    print(f"Process with PID {pid} not found (already terminated).")
+            print(f"All {process_name} processes terminated.")
+        else:
+            print(f"No {process_name} processes found running.")
+    except subprocess.CalledProcessError:
+        print(f"No {process_name} processes found.")
+
+# Terminate Streamlit processes
+terminate_process("streamlit")
+
+# Terminate localtunnel processes (the 'lt' command)
+terminate_process("lt")
+
+print("Termination attempt complete.")
