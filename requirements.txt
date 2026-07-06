@@ -1,0 +1,21 @@
+streamlit:import streamlit
+openai-whisper:import whisper
+torch:import torch 
+torchaudio
+sentence-transformers
+scikit-learn
+numpy:import numpy as pd
+pandas:import pandas as pd
+librosa:import librosa
+soundfile: import soundfile
+matplotlib:import matplotlib
+plotly:import plotly
+reportlab:import reportlab
+nltk:import nltk
+scipy:import scipy
+ffmpeg-python:import ffmpeg-python
+transformers:import transformers
+huggingface-hub:import huggingface-hub
+tqdm:import tqdm
+joblib:import joblib
+Pillow:import pillow
